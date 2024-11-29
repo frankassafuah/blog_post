@@ -1,6 +1,7 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse
 from .models import Post
+from django.contrib.auth.models import User
 from django.views.generic import (
     ListView,
     DetailView,
@@ -39,6 +40,18 @@ class PostListView(ListView):
     ordering = [
         "-date_posted"
     ]  # orders our post from newes to oldest ( remove - sign if you want to order from oldest to newest)
+    paginate_by = 2
+
+
+class UserPostListView(ListView):
+    model = Post
+    template_name = "blog/user_post.html"  # by default django view look for <app>/<model>_<viewtype>.html
+    context_object_name = "posts"  # by default the PostListView will call our context 'object' instead of 'posts'
+    paginate_by = 2
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs.get("username"))
+        return Post.objects.filter(author=user).order_by('-date_posted') # orders our new posts from newes to oldest ( remove - sign if you want to order from oldest to newest)
 
 
 class PostDetailView(DetailView):
@@ -75,7 +88,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post
-    success_url = '/'
+    success_url = "/"
 
     # UserPassesTestMixin will run this test_func method
     def test_func(self):
