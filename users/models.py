@@ -12,8 +12,8 @@ class Profile(models.Model):
     def __str__(self):
         return f'{self.user.username} Profile'
     
-    def save(self): # this save method is a method that gets ran after the model has been saved. it exists in the parent model and we are creating our own
-        super().save() # ran save method of parent class
+    def save(self, *args, **kwargs): # this save method is a method that gets ran after the model has been saved. it exists in the parent model and we are creating our own
+        super().save( *args, **kwargs) # ran save method of parent class
     
         #resizing image
 
